@@ -10,11 +10,8 @@ import sinalgo.gui.transformation.PositionTransformation;
 import sinalgo.nodes.Node;
 import sinalgo.nodes.edges.Edge;
 import sinalgo.nodes.messages.Inbox;
-import sinalgo.tools.logging.Logging;
 
 public class distNode extends Node {
-	
-	private Logging log = Logging.getLogger("dist_log");
 	
 	@Override
 	public void handleMessages(Inbox inbox) {
@@ -42,6 +39,9 @@ public class distNode extends Node {
 			} else {
 				// "Remove" edge from screen
 				((DistBidirectionalEdge) e).setColor(new Color(0, 0, 0, 0));
+				
+				// No label
+				((DistBidirectionalEdge) e).setLabel(0);
 			}
 		}
 	}
