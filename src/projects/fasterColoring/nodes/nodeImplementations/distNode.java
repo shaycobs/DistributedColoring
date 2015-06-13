@@ -1,13 +1,14 @@
 package projects.fasterColoring.nodes.nodeImplementations;
 
+import projects.fasterColoring.nodes.edges.*;
+
 import common.Nodes.BaseDistNode;
-import projects.colorDistribution.nodes.edges.DistBidirectionalEdge;
 import sinalgo.nodes.edges.Edge;
 import sinalgo.nodes.messages.Inbox;
 
 import java.awt.*;
 
-public class DistNode extends BaseDistNode {
+public class distNode extends BaseDistNode {
 
 	@Override
 	public void handleMessages(Inbox inbox) {

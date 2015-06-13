@@ -1,7 +1,7 @@
 package projects.colorDistribution.nodes.nodeImplementations;
 
 import common.Nodes.BaseDistNode;
-import projects.colorDistribution.nodes.edges.DistBidirectionalEdge;
+import projects.colorDistribution.nodes.edges.*;
 import sinalgo.nodes.edges.Edge;
 import sinalgo.nodes.messages.Inbox;
 
