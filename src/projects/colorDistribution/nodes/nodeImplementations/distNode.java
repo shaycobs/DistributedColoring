@@ -1,30 +1,13 @@
 package projects.colorDistribution.nodes.nodeImplementations;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.util.HashMap;
-
+import common.Nodes.BaseDistNode;
 import projects.colorDistribution.nodes.edges.DistBidirectionalEdge;
-
-import sinalgo.configuration.WrongConfigurationException;
-import sinalgo.gui.transformation.PositionTransformation;
-import sinalgo.nodes.Node;
 import sinalgo.nodes.edges.Edge;
 import sinalgo.nodes.messages.Inbox;
 
-public class DistNode extends Node {
-	
-	int round = 1;
-	
-	/**
-	 * Vertex parents in the tree it belongs to, in the forest oriented by the edge labels
-	 */
-	HashMap<Integer, Node> parentsHash = new HashMap<>(); 
-	
-	/**
-	 * Is this vertex a root in the tree it belongs to, in the forest oriented by the edge labels
-	 */
-	HashMap<Integer, Boolean> rootsHash = new HashMap<>();
+import java.awt.*;
+
+public class DistNode extends BaseDistNode {
 	
 	@Override
 	public void handleMessages(Inbox inbox) {		
@@ -44,41 +27,6 @@ public class DistNode extends Node {
 		
 		// Increase number of rounds
 		round++;
-	}
-
-	@Override
-	public void preStep() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void init() {
-		
-	}
-
-	@Override
-	public void neighborhoodChange() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void postStep() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void checkRequirements() throws WrongConfigurationException {
-		// TODO Auto-generated method stub
-
-	}
-	
-	@Override
-	public void draw(Graphics g, PositionTransformation pt, boolean highlight) {
-		this.setColor(new Color(ID*99999));
-		drawAsDisk(g, pt, highlight, 5);
 	}
 	
 	/**
@@ -137,24 +85,5 @@ public class DistNode extends Node {
 		
 	}
 	
-	/**
-	 * @param label
-	 * @return The parent of the vertex in a tree that belongs to a forest oriented by label.
-	 * Returns null if no such parent exists.
-	 */
-	private Node getParent(int label) {
-		return parentsHash.get(label);
-	}
-	
-	/**
-	 * @param label - The forest in which the vertex may be the root of a tree
-	 * @return - Is the vertex a root in a tree that belongs to the forest oriented by label
-	 */
-	private boolean isRoot(int label) {
-		if (rootsHash.get(label) == null) {
-			return true;
-		}
-		
-		return rootsHash.get(label);
-	}
+
 }
