@@ -18,7 +18,7 @@ public class BaseDistNode extends Node {
     /**
      * Vertex parents in the tree it belongs to, in the forest oriented by the edge labels
      */
-    protected HashMap<Integer, Node> parentsHash = new HashMap<>();
+    protected HashMap<Integer, BaseDistNode> parentsHash = new HashMap<>();
 
     /**
      * Is this vertex a root in the tree it belongs to, in the forest oriented by the edge labels
@@ -36,7 +36,7 @@ public class BaseDistNode extends Node {
      * @return The parent of the vertex in a tree that belongs to a forest oriented by label.
      * Returns null if no such parent exists.
      */
-    public Node getParent(int label) {
+    public BaseDistNode getParent(int label) {
         return parentsHash.get(label);
     }
 
@@ -101,7 +101,7 @@ public class BaseDistNode extends Node {
                 ((DistBidirectionalEdge) e).setLabel(label);
 
                 // Set the vertex parent in the forest oriented by label
-                parentsHash.put(label, e.endNode);
+                parentsHash.put(label, (BaseDistNode)e.endNode);
 
                 // TODO: test only. delete later (good for grid2D test with 90 nodes)
                 if (label == 1) {
