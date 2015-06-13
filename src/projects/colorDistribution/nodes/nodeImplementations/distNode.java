@@ -35,7 +35,7 @@ public class DistNode extends Node {
 			// TODO: Test, delete later
 			for (int label = 1; label < 5; label++) {
 				if (getParent(label) != null)
-					System.out.println("Vertex " + ID + " parent is " + getParent(label));
+					System.out.println("Vertex " + ID + " parent is " + getParent(label).ID + " for label " + label);
 				
 				if (isRoot(label))
 					System.out.println("Vertex " + ID + " is a root in forest " + label);
@@ -81,6 +81,9 @@ public class DistNode extends Node {
 		drawAsDisk(g, pt, highlight, 5);
 	}
 	
+	/**
+	 * Orients the graph into at most delta forests
+	 */
 	private void forestDecomposition() {
 		int label = 1;
 		for (Edge e : this.outgoingConnections) {
@@ -95,7 +98,7 @@ public class DistNode extends Node {
 				// Set the vertex parent in the forest oriented by label
 				parentsHash.put(label, e.endNode);
 				
-				// TODO: test only. delete later (good for grid2D test with 100 nodes)
+				// TODO: test only. delete later (good for grid2D test with 90 nodes)
 				if (label == 1) {
 					((DistBidirectionalEdge) e).setColor(Color.RED);
 				} else if (label == 2) {
@@ -114,6 +117,19 @@ public class DistNode extends Node {
 				// No label
 				((DistBidirectionalEdge) e).setLabel(0);
 			}
+		}
+		
+		// For all current labels, set is the vertex is a root in a tree oriented by a label
+		for (int tempLabel = 1; tempLabel <= label; tempLabel++) {
+			boolean isRoot = true;
+			for (Edge e : this.outgoingConnections) {
+				if (((DistBidirectionalEdge) e).getLabel() == tempLabel) {
+					isRoot = false;
+					break;
+				}
+			}
+			
+			rootsHash.put(tempLabel, isRoot);
 		}
 	}
 	
@@ -135,12 +151,10 @@ public class DistNode extends Node {
 	 * @return - Is the vertex a root in a tree that belongs to the forest oriented by label
 	 */
 	private boolean isRoot(int label) {
-		for (Edge e : this.outgoingConnections) {
-			if (((DistBidirectionalEdge) e).getLabel() == label) {
-				return false;
-			}
+		if (rootsHash.get(label) == null) {
+			return true;
 		}
 		
-		return true;
+		return rootsHash.get(label);
 	}
 }
