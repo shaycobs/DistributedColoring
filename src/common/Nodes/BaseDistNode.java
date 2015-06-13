@@ -66,6 +66,22 @@ public class BaseDistNode extends Node {
         this.colorBitInt = colorBitInt;
     }
 
+    /**
+     * Return true if none of this node's neighbors are using the color "color".
+     * @param color
+     * @return true if color is free
+     */
+    public boolean isColorFree(int color) {
+        for (Edge e : this.outgoingConnections) {
+            BaseDistNode neighbor = (BaseDistNode)e.endNode;
+            // If at least one neighbor is using this color, its not free.
+            if (neighbor.getColorBitInt() == color)
+                return false;
+        }
+
+        return true;
+    }
+
     @Override
     public void handleMessages(Inbox inbox) {
         // Forest Decomposition
