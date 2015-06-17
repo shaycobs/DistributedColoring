@@ -21,9 +21,9 @@ public class BaseDistNode extends Node {
     protected HashMap<Integer, Node> parentsHash = new HashMap<>();
 
     /**
-     * Is this vertex a root in the tree it belongs to, in the forest oriented by the edge labels
+     * Holds all the labels in which the vertex is not a root
      */
-    protected HashMap<Integer, Boolean> rootsHash = new HashMap<>();
+    protected HashMap<Integer, Boolean> notRootsHash = new HashMap<>();
 
     @Override
     public void init() {
@@ -45,11 +45,11 @@ public class BaseDistNode extends Node {
      * @return - Is the vertex a root in a tree that belongs to the forest oriented by label
      */
     public boolean isRoot(int label) {
-        if (rootsHash.get(label) == null) {
+        if (notRootsHash.get(label) == null) {
             return true;
         }
 
-        return rootsHash.get(label);
+        return notRootsHash.get(label);
     }
 
     @Override
@@ -102,6 +102,9 @@ public class BaseDistNode extends Node {
 
                 // Set the vertex parent in the forest oriented by label
                 parentsHash.put(label, e.endNode);
+                
+                // Not a root
+                notRootsHash.put(label, false);
 
                 // TODO: test only. delete later (good for grid2D test with 90 nodes)
                 if (label == 1) {
@@ -122,19 +125,6 @@ public class BaseDistNode extends Node {
                 // No label
                 ((DistBidirectionalEdge) e).setLabel(0);
             }
-        }
-
-        // For all current labels, set is the vertex is a root in a tree oriented by a label
-        for (int tempLabel = 1; tempLabel <= label; tempLabel++) {
-            boolean isRoot = true;
-            for (Edge e : this.outgoingConnections) {
-                if (((DistBidirectionalEdge) e).getLabel() == tempLabel) {
-                    isRoot = false;
-                    break;
-                }
-            }
-
-            rootsHash.put(tempLabel, isRoot);
         }
     }
 
