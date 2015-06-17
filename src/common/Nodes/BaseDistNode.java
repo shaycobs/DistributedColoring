@@ -18,7 +18,7 @@ public class BaseDistNode extends Node {
     /**
      * Vertex parents in the tree it belongs to, in the forest oriented by the edge labels
      */
-    protected HashMap<Integer, Node> parentsHash = new HashMap<>();
+    protected HashMap<Integer, BaseDistNode> parentsHash = new HashMap<>();
 
     /**
      * Holds all the labels in which the vertex is not a root
@@ -36,7 +36,7 @@ public class BaseDistNode extends Node {
      * @return The parent of the vertex in a tree that belongs to a forest oriented by label.
      * Returns null if no such parent exists.
      */
-    public Node getParent(int label) {
+    public BaseDistNode getParent(int label) {
         return parentsHash.get(label);
     }
 
@@ -64,6 +64,22 @@ public class BaseDistNode extends Node {
 
     public void setColorBitInt(int colorBitInt) {
         this.colorBitInt = colorBitInt;
+    }
+
+    /**
+     * Return true if none of this node's neighbors are using the color "color".
+     * @param color
+     * @return true if color is free
+     */
+    public boolean isColorFree(int color) {
+        for (Edge e : this.outgoingConnections) {
+            BaseDistNode neighbor = (BaseDistNode)e.endNode;
+            // If at least one neighbor is using this color, its not free.
+            if (neighbor.getColorBitInt() == color)
+                return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -101,7 +117,7 @@ public class BaseDistNode extends Node {
                 ((DistBidirectionalEdge) e).setLabel(label);
 
                 // Set the vertex parent in the forest oriented by label
-                parentsHash.put(label, e.endNode);
+                parentsHash.put(label, (BaseDistNode)e.endNode);
                 
                 // Not a root
                 notRootsHash.put(label, false);
