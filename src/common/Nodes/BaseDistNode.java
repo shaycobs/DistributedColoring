@@ -14,7 +14,11 @@ public class BaseDistNode extends Node {
 
     protected int colorBitInt;
     protected int round = 1;
-
+    protected int roundAnchor = -1;
+    
+    protected int numOfVerteces = 90;
+    protected int maxDegree = 4;
+    
     /**
      * Vertex parents in the tree it belongs to, in the forest oriented by the edge labels
      */
@@ -24,11 +28,17 @@ public class BaseDistNode extends Node {
      * Holds all the labels in which the vertex is not a root
      */
     protected HashMap<Integer, Boolean> notRootsHash = new HashMap<>();
+    
+    /**
+     * The vertex's color in a 3-color, per each forest. <Key = Forest, Value = color> 
+     */
+    protected HashMap<Integer, Integer> vertexCV3ColorsPerForest = new HashMap<>();
 
     @Override
     public void init() {
         // Init color is node's ID
         this.colorBitInt = this.ID;
+        
     }
 
     /**
@@ -99,13 +109,13 @@ public class BaseDistNode extends Node {
         }
 
         // Increase number of rounds
-        round++;
+        //round++;
     }
 
     /**
      * Orients the graph into at most delta forests
      */
-    private void forestDecomposition() {
+    protected void forestDecomposition() {
         int label = 1;
         for (Edge e : this.outgoingConnections) {
             // If start node's ID is smaller then end node's ID, than the edge is directed from start to end
