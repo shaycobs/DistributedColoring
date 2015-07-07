@@ -14,7 +14,6 @@ public class BaseDistNode extends Node {
 
     protected int colorBitInt;
     protected int round = 1;
-    protected int roundAnchor = -1;
     
     protected int numOfVerteces = 90;
     protected int maxDegree = 4;
