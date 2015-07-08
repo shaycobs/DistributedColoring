@@ -32,11 +32,13 @@ public class ColeVishkin {
     }
 
     // Current algorithm phase
-    private Phase phase;
+    public Phase phase;
 
-    public ColeVishkin(BaseDistNode node, int numNodes) {
+    public ColeVishkin(BaseDistNode node, int numNodes, int forestLabel) {
 
         this.node = node;
+        this.forestLabel = forestLabel;
+
         /**
          * In order to reduce the number of colors to 6, we need to run reduceColor procedure
          * for exactly log*n rounds + 3
@@ -45,14 +47,6 @@ public class ColeVishkin {
 
         // init phase
         phase = Phase.REDUCE;
-    }
-
-    /**
-     * Set the label of the forest we are currently working on
-     * @param forestLabel
-     */
-    public void setForestLabel(int forestLabel) {
-        this.forestLabel = forestLabel;
     }
 
     /**
@@ -68,22 +62,37 @@ public class ColeVishkin {
      */
     public Phase onRound(int round) throws Exception {
 
+
         switch (phase) {
             case REDUCE:
+                System.out.println("Node=" + node.ID + " Reduce phase. forest: " + forestLabel + " round " + round + " reduce color rounds: " + reduceColorRounds);
                 reduceColor();
-                if (round == reduceColorRounds)
+                if (round == reduceColorRounds) {
                     phase = Phase.SHIFT_DOWN;
+                }
                 break;
             case SHIFT_DOWN:
+                System.out.println("Node=" + node.ID + " Shift-down on forest " + forestLabel);
                 shiftDown();
                 phase = Phase.FIRST_FREE;
                 break;
             case FIRST_FREE:
-                firstFree();
+                if (node.getColorBitInt(forestLabel) == currentShiftDownColor) {
+                    firstFree();
+                    System.out.println("Node=" + node.ID + " First-free. forest: " + forestLabel + " next color " + currentShiftDownColor);
+                }
                 // Go to next color
                 currentShiftDownColor--;
-                phase = currentShiftDownColor >= 3 ? Phase.SHIFT_DOWN : Phase.COMPLETED;
+                phase = currentShiftDownColor >= 4 ? Phase.SHIFT_DOWN : Phase.COMPLETED;
                 break;
+            case COMPLETED:
+                if (node.getColorBitInt(forestLabel) <= 3) {
+                    System.out.println("Painted node " + node.ID + " on forest " + forestLabel
+                            + " successfully by color " + node.getColorBitInt(forestLabel)
+                            + " parent color is " + node.getParent(forestLabel).getColorBitInt(forestLabel));
+                } else {
+                    throw new Exception("ERROR! CV algo completed but node " + node.ID + " on forest " + forestLabel + " color is " + node.getColorBitInt(forestLabel));
+                }
         }
 
         return phase;
@@ -92,56 +101,72 @@ public class ColeVishkin {
     /**
      * This is the first phase of the algorithm: reduces number of colors to 6 in log*n rounds.
      */
-    private void reduceColor() {
+    private void reduceColor() throws Exception {
         int newColor;
         // Get my color bit string
-        int myColor = node.getColorBitInt();
+        int myColor = getColorBitInt();
         /**
          * difference index: for root pick "0" (arbitrary),
          * For other nodes pick an index where the color bit string is different from parent's bit string
          */
         int diffInd = node.isRoot(forestLabel) ? 0 : getParentDiffIndex();
         // Get the bit value of this index
-        int bitValue = (myColor & diffInd) > 0 ? 1 : 0;
+        int x = (int)Math.pow(2, (double)diffInd);
+        int bitValue = (myColor & x) > 0 ? 1 : 0;
 
-        // Now create the new color by concatenating the different bit index to its value
-        newColor = concatBitToNum(diffInd, bitValue);
+        // Now create the new color by concatenating the different bit index to its value (+1, to make colors start at 1)
+        newColor = concatBitToNum(diffInd+1, bitValue);
 
         // Set this as the new color
-        node.setColorBitInt(newColor);
+        setColorBitInt(newColor);
     }
 
     /**
-     * Root will pick a new random color from {0,1,2}.
+     * Root will pick a new random color from {1,2,3}.
      * Other nodes will inherit parent's color.
      * @throws Exception
      */
     private void shiftDown() throws Exception {
-        int newColor = node.isRoot(forestLabel) ? chooseNewColor() : node.getParent(forestLabel).getColorBitInt();
+        int newColor = node.isRoot(forestLabel) ?
+                chooseNewColor() :
+                node.getParent(forestLabel).getColorBitInt(forestLabel);
 
-        node.setColorBitInt(newColor);
+        setColorBitInt(newColor);
     }
 
     /**
-     * Colors the node in a free color from {0,1,2}.
-     * Run this method for each node that is colored by {3,4,5}
+     * Colors the node in a free color from {1,2,3}.
+     * Run this method for each node that is colored by {4,5,6}
      * @throws Exception
      */
     private void firstFree() throws Exception {
         int newColor = findFreeColor();
-        node.setColorBitInt(newColor);
+        setColorBitInt(newColor);
     }
 
     /**
-     * Find a free color from {0,1,2}.
+     * Find a free color from {1,2,3}.
      * @return found color number
      * @throws Exception
      */
     private int findFreeColor() throws Exception {
-        for (int i = 0; i < 3; i++) {
-            if (node.isColorFree(i)) {
+        for (int i = 1; i <= 3; i++) {
+            if (node.isColorFree(forestLabel, i)) {
                 return i;
             }
+        }
+        // If we got to this point, there is a problem...
+        throw new Exception("No free color found!");
+    }
+
+    /**
+     * Choose a new color from colors {1,2,3}, once that is not the current node color.
+     * @return new color
+     */
+    private int chooseNewColor() throws Exception {
+        for (int i = 1; i <= 3; i++) {
+            if (i != getColorBitInt())
+                return i;
         }
 
         // If we got to this point, there is a problem...
@@ -149,17 +174,20 @@ public class ColeVishkin {
     }
 
     /**
-     * Choose a new color from colors {0,1,2}, once that is not the current node color.
-     * @return new color
+     * Sets node color bit int for current forest
+     * @param colorInt
      */
-    private int chooseNewColor() throws Exception {
-        for (int i = 0; i < 3; i++) {
-            if (i != node.getColorBitInt())
-                return i;
-        }
+    private void setColorBitInt(int colorInt) {
+        node.setColorBitInt(forestLabel, colorInt);
+        node.sendColorToChildren(forestLabel, colorInt);
+    }
 
-        // If we got to this point, there is a problem...
-        throw new Exception("No free color found!");
+    /**
+     * Gets node color bit int for current forest
+     * @return Color int
+     */
+    private int getColorBitInt() {
+        return node.getColorBitInt(forestLabel);
     }
 
     /**
@@ -167,9 +195,10 @@ public class ColeVishkin {
      * from the parent's color bit string.
      * @return index i of color bitstring
      */
-    private int getParentDiffIndex() {
-        int myColor = node.getColorBitInt();
-        int parentColor = node.getParent(forestLabel).getColorBitInt();
+    private int getParentDiffIndex() throws Exception {
+        int myColor = getColorBitInt();
+        BaseDistNode parent = node.getParent(forestLabel);
+        int parentColor = parent.getColorBitInt(forestLabel);
 
         // XOR colors to find which bits are different
         int colorDiff = myColor ^ parentColor;
@@ -183,6 +212,9 @@ public class ColeVishkin {
          */
         int x = 1, i = 0;
         while ((colorDiff & x) == 0) {
+            if (i > 63) { // color is 64 bit at most
+                throw new Exception("Illegal coloring: node " + node.ID + " and parent " + parent.ID + " have the same color");
+            }
             x *= 2;
             i++;
         }
