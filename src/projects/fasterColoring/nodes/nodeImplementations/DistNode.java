@@ -45,7 +45,7 @@ public class DistNode extends BaseDistNode {
 	public void handleMessages(Inbox inbox) {
 		super.handleMessages(inbox);
 		
-		if (Global.currentTime > 1) {			
+		if ((Global.currentTime > 2) && !isCv && finalStep) {			
 			// Reduce color
 			if (isReduce) {
 				colorReduction(iterColor, inbox);
@@ -87,6 +87,8 @@ public class DistNode extends BaseDistNode {
 		            
 		            send(new NeighborColorMessage(this.uniColor), neighbor);
 				}
+				
+				finalStep = false;
 			}
 		}
 	}
@@ -99,20 +101,19 @@ public class DistNode extends BaseDistNode {
 		
 		if (forestCountUp == 1) {
 			// First forest node color
-			mergeColor = forestColor.get(forestCountUp);
+			mergeColor = getColorBitInt(forestCountUp) - 1;
 			
 		} else {
 			// New color is from (delta+1) * 3 (because of 3-coloring). we add 1 so we won't multiply with 0,
 			// and then 1 is reduces to have 0->delta colors and not 1->delta+1 colors
-			mergeColor = mergeColor * forestColor.get(forestCountUp);
+			//mergeColor = mergeColor * getColorBitInt(forestCountUp);
 			
-			/*// New color is shifted two bits to the left and or'd the next forest color
-			mergeColor = (mergeColor << 2) | vertexCV3ColorsPerForest.get(forestCountUp);
+			// New color is shifted two bits to the left and or'd the next forest color
+			mergeColor = (mergeColor << 2) | (getColorBitInt(forestCountUp) - 1);
 			
 
 			// Lower for continuity (dirty dirty trick)
 			mergeColor = mergeColor - (mergeColor / 4);
-			*/
 		}
 		
 		setUniColor(mergeColor);

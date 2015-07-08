@@ -19,16 +19,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class BaseDistNode extends Node {
-
-    //protected int round = 1;
-    //protected int roundAnchor = -1;
-
-    //protected int maxDegree = 4;
 	
 	/**
 	 * The node color after calculations
 	 */
 	protected int uniColor = 0;
+	
+	/**
+	 * False when the algorithm finishes with the CV stage
+	 */
+	protected boolean isCv = true;
+	
+	protected boolean finalStep = true;
     
     /**
      * Vertex parents in the tree it belongs to, in the forest oriented by the edge labels
@@ -94,7 +96,7 @@ public class BaseDistNode extends Node {
      * @return combined forests color
      */
     public int getUniColor() {
-        // quick & dirty solution to concat all colors
+        /*// quick & dirty solution to concat all colors
         String colorString = "";
         for (int forest : forestColor.keySet()) {
             colorString += forestColor.get(forest);
@@ -106,7 +108,9 @@ public class BaseDistNode extends Node {
 
         // Convert to longest int
         return (int)Long.parseLong(colorString) % Integer.MAX_VALUE;
-
+		*/
+    	
+    	return this.uniColor;
     }
 
     /**
@@ -204,7 +208,7 @@ public class BaseDistNode extends Node {
 
         // Number of total nodes on the network
         int numNodes =  AppConfig.getAppConfig().generateNodesDlgNumNodes;
-
+        
         // Handle incoming messages
         while(inbox.hasNext()) {
             Message msg = inbox.next();
@@ -221,7 +225,7 @@ public class BaseDistNode extends Node {
         if (Global.currentTime == 1) {
             forestDecomposition();
 
-        } else if (Global.currentTime > 2) {
+        } else if ((Global.currentTime > 2) && isCv) {
             // Run cole-vishkin on all forests
 
             // cole-vishkin round is 1 less than global round number, as it starts on the 2nd round
@@ -247,6 +251,9 @@ public class BaseDistNode extends Node {
                     }
                 }
             }
+            
+            // Check if CV should calculate in the next round
+            isCv = isNotAllComplete();
         }
     }
 
@@ -316,6 +323,19 @@ public class BaseDistNode extends Node {
             BaseDistNode parent = parentsHash.get(forest);
             send(new ForestJoinMsg(forest), parent);
         }
+    }
+    
+    /**
+     * @return true if all forests are done with Cole Vishkin. false otherwise.
+     */
+    private boolean isNotAllComplete() {
+    	for (ColeVishkin cv : forestCV.values()) {
+			if (cv.phase != ColeVishkin.Phase.COMPLETED) {
+				return true;
+			}
+		}
+    	
+    	return false;
     }
 
     @Override
