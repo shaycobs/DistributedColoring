@@ -16,7 +16,6 @@ public class DistBidirectionalEdge extends Edge {
 	 */
 	private int label;
 	
-	
 	/**
 	 * Edge color. For debugging purposes.
 	 */

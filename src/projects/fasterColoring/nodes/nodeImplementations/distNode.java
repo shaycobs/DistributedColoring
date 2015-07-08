@@ -32,20 +32,6 @@ public class DistNode extends BaseDistNode {
 	 */
 	private boolean isReduce = false;
 	
-	/**
-	 * Stores if neighbors are colored in color Key
-	 */
-	private Vector<Boolean> colorPalette = new Vector<>();
-	
-	@Override
-	public void init() {
-		super.init();
-		
-		// Initialize color palette
-		for (int i = 0; i <= maxDegree; i++) {
-			this.colorPalette.add(false);
-		}
-	}
 	@Override
 	public void handleMessages(Inbox inbox) {
 		super.handleMessages(inbox);
@@ -126,7 +112,7 @@ public class DistNode extends BaseDistNode {
 	 * If the node's color is current color, reduces it to a color from delta+1
 	 * @param currentColor
 	 */
-	private void colorReduction(int currentColor, Inbox inbox) {
+	private void colorReduction(int currentColor, Inbox inbox) {		
 		// Reduce only the current iteration color
 		if (this.getColorBitInt() == currentColor) {
 			// Get the colors of all neighbors
@@ -138,6 +124,14 @@ public class DistNode extends BaseDistNode {
 	                colorPalette.set(neighbor.getColorBitInt()-1, true);
 	            }
 	        }*/
+			
+			// Stores if neighbors are colored in color Key
+			Vector<Boolean> colorPalette = new Vector<>();
+			
+			// Initialize color palette
+			for (int i = 0; i <= maxDegree; i++) {
+				colorPalette.add(false);
+			}
 			
 			// Get the colors of all neighbors
 			while (inbox.hasNext()) {
