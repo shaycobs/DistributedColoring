@@ -20,11 +20,15 @@ import java.util.HashMap;
 
 public class BaseDistNode extends Node {
 
-    protected int round = 1;
-    protected int roundAnchor = -1;
+    //protected int round = 1;
+    //protected int roundAnchor = -1;
 
-    protected int numOfVerteces = 90;
-    protected int maxDegree = 4;
+    //protected int maxDegree = 4;
+	
+	/**
+	 * The node color after calculations
+	 */
+	protected int uniColor = 0;
     
     /**
      * Vertex parents in the tree it belongs to, in the forest oriented by the edge labels
@@ -37,11 +41,6 @@ public class BaseDistNode extends Node {
      * Holds all the labels in which the vertex is not a root
      */
     protected HashMap<Integer, Boolean> notRootsHash = new HashMap<>();
-    
-    /**
-     * The vertex's color in a 3-color, per each forest. <Key = Forest, Value = color> 
-     */
-    protected HashMap<Integer, Integer> vertexCV3ColorsPerForest = new HashMap<>();
 
     /**
      * Node color bit strings for each forest.
@@ -111,6 +110,14 @@ public class BaseDistNode extends Node {
     }
 
     /**
+     * Set the unified color of the node
+     * @param uniColor
+     */
+    public void setUniColor(int uniColor) {
+		this.uniColor = uniColor;
+	}
+
+	/**
      * Gets the current color for this forest
      * @param forest
      * @return color int

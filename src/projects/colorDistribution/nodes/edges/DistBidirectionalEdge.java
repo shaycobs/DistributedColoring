@@ -2,7 +2,6 @@ package projects.colorDistribution.nodes.edges;
 
 import java.awt.Color;
 
-import sinalgo.nodes.edges.BidirectionalEdge;
 import sinalgo.nodes.edges.Edge;
 
 /**
