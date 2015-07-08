@@ -6,6 +6,7 @@ import sinalgo.gui.transformation.PositionTransformation;
 import sinalgo.nodes.Node;
 import sinalgo.nodes.edges.Edge;
 import sinalgo.nodes.messages.Inbox;
+import sinalgo.runtime.Global;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -13,7 +14,6 @@ import java.util.HashMap;
 public class BaseDistNode extends Node {
 
     protected int colorBitInt;
-    protected int round = 1;
     
     protected int numOfVerteces = 90;
     protected int maxDegree = 4;
@@ -94,9 +94,9 @@ public class BaseDistNode extends Node {
     @Override
     public void handleMessages(Inbox inbox) {
         // Forest Decomposition
-        if (round == 1) {
+        if (Global.currentTime == 1) {
             forestDecomposition();
-        } else if (round == 2) {
+        } else if (Global.currentTime == 2) {
             // TODO: Test, delete later
             for (int label = 1; label < 5; label++) {
                 if (getParent(label) != null)
@@ -106,9 +106,6 @@ public class BaseDistNode extends Node {
                     System.out.println("Vertex " + ID + " is a root in forest " + label);
             }
         }
-
-        // Increase number of rounds
-        //round++;
     }
 
     /**

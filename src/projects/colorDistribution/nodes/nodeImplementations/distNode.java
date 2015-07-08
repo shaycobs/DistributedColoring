@@ -8,8 +8,6 @@ public class DistNode extends BaseDistNode {
 	@Override
 	public void handleMessages(Inbox inbox) {
 		super.handleMessages(inbox);
-		
-		round++;
 	}
 
 }
