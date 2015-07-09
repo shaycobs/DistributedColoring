@@ -1,12 +1,11 @@
 package projects.fasterColoring.nodes.nodeImplementations;
 
+import common.nodes.nodeImplementations.BaseDistNode;
 import projects.fasterColoring.CustomGlobal;
 import projects.fasterColoring.nodes.messages.NeighborColorMessage;
 import sinalgo.nodes.edges.Edge;
 import sinalgo.nodes.messages.Inbox;
 import sinalgo.runtime.Global;
-
-import common.Nodes.BaseDistNode;
 
 public class DistNode extends BaseDistNode {
 
@@ -29,7 +28,7 @@ public class DistNode extends BaseDistNode {
 	 * Is in reduce
 	 */
 	private boolean isReduce = false;
-	
+
 	@Override
 	public void handleMessages(Inbox inbox) {
 		super.handleMessages(inbox);
@@ -81,7 +80,7 @@ public class DistNode extends BaseDistNode {
 				}
 			} else if (forestCountUp == CustomGlobal.maxDegree + 1) {
 				finalStep = false;
-				System.out.println("FC Node=" + this.ID + "; Faster Coloring done! Final color: " + this.uniColor);
+				System.out.println("Round [" + Global.currentTime + "]:" +"FC Node=" + this.ID + "; Faster Coloring done! Final color: " + this.uniColor);
 				forestCountUp++;
 			}
 		}
@@ -111,13 +110,14 @@ public class DistNode extends BaseDistNode {
 		System.out.println("FC Node=" + this.ID + "; Merge for forest: " + forestCountUp 
 				+ "; Previous color: " + previous + "; Current color: " + (getColorBitInt(forestCountUp) - 1) 
 				+ "; Computed color: " + this.uniColor);
+		//System.out.println("Round [" + Global.currentTime + "]:" +"FC Node=" + this.ID + "; Merge for forest: " + forestCountUp + "; Computed color: " + this.uniColor);
 	}
 	
 	/**
 	 * If the node's color is current color, reduces it to a color from delta+1
 	 * @param currentColor
 	 */
-	private void colorReduction(int currentColor, Inbox inbox) {
+	private void colorReduction(int currentColor, Inbox inbox) {		
 		// Reduce only the current iteration color
 		if (this.uniColor == currentColor) {
 			// Search for a free color in the palette
@@ -127,7 +127,7 @@ public class DistNode extends BaseDistNode {
 				}
 			}
 			
-			System.out.println("FC Node=" + this.ID + "; Color reduced from " + currentColor + " to " + this.getUniColor());
+			System.out.println("Round [" + Global.currentTime + "]:" + "FC Node=" + this.ID + "; Color reduced from " + currentColor + " to " + this.getUniColor());
 		}
 	}
 }
