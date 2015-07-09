@@ -1,12 +1,11 @@
 package projects.fasterColoring.nodes.nodeImplementations;
 
+import common.nodes.nodeImplementations.BaseDistNode;
 import projects.fasterColoring.CustomGlobal;
 import projects.fasterColoring.nodes.messages.NeighborColorMessage;
 import sinalgo.nodes.edges.Edge;
 import sinalgo.nodes.messages.Inbox;
 import sinalgo.runtime.Global;
-
-import common.Nodes.BaseDistNode;
 
 public class DistNode extends BaseDistNode {
 

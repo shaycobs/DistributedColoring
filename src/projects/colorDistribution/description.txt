@@ -1,7 +1,5 @@
-This is the template project.
+Algorithm 3.6 from the monograph
+"Distributed Graph Coloring:Fundamentals and Recent Developments"
+By Leonid Barenboim and Michael Elkin of Ben-Gurion University of the Negev.
 
-Copy this folder and rename it to start a new project. If this description
-appears for a project that is not the template description then the 
-description has not yet been written. Please describe the project in 
-the description.txt stored in the project root folder of this
-project.
+(3^Delta)-coloring in log-star(n) + O(1) time.
