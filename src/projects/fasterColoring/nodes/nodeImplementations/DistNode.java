@@ -48,7 +48,7 @@ public class DistNode extends BaseDistNode {
 				reduceCountDown--;
 				
 				// If we reached 0 we're no longer reducing
-				if (reduceCountDown == 0) {
+				if (reduceCountDown < 0) {
 					isReduce = false;
 				}
 				
@@ -94,6 +94,7 @@ public class DistNode extends BaseDistNode {
 	 */
 	private void mergeNodeColors() {
 		int mergeColor = getUniColor();
+		int previous = mergeColor;
 		
 		if (forestCountUp == 1) {
 			mergeColor = getColorBitInt(forestCountUp) - 1;
@@ -107,7 +108,9 @@ public class DistNode extends BaseDistNode {
 		
 		setUniColor(mergeColor);
 		
-		System.out.println("FC Node=" + this.ID + "; Merge for forest: " + forestCountUp + "; Computed color: " + this.uniColor);
+		System.out.println("FC Node=" + this.ID + "; Merge for forest: " + forestCountUp 
+				+ "; Previous color: " + previous + "; Current color: " + (getColorBitInt(forestCountUp) - 1) 
+				+ "; Computed color: " + this.uniColor);
 	}
 	
 	/**
