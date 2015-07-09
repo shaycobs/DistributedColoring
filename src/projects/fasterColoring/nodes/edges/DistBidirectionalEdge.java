@@ -2,7 +2,6 @@ package projects.fasterColoring.nodes.edges;
 
 import java.awt.Color;
 
-import sinalgo.nodes.edges.BidirectionalEdge;
 import sinalgo.nodes.edges.Edge;
 
 /**

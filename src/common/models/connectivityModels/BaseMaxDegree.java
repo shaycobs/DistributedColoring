@@ -1,12 +1,11 @@
 package common.models.connectivityModels;
 
-import projects.colorDistribution.CustomGlobal;
+import java.util.Enumeration;
+
 import projects.defaultProject.models.connectivityModels.StaticUDG;
 import sinalgo.configuration.CorruptConfigurationEntryException;
 import sinalgo.configuration.WrongConfigurationException;
 import sinalgo.nodes.Node;
-
-import java.util.Enumeration;
 
 import common.globals.BaseCustomGlobal;
 
