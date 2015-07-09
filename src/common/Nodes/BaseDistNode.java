@@ -5,7 +5,7 @@ import common.Messages.ForestJoinMsg;
 import common.globals.BaseCustomGlobal;
 import distributedAlgos.ColeVishkin;
 import projects.colorDistribution.nodes.edges.DistBidirectionalEdge;
-import projects.fasterColoring.CustomGlobal;
+import projects.fasterColoring.nodes.messages.NeighborColorMessage;
 import sinalgo.configuration.AppConfig;
 import sinalgo.configuration.WrongConfigurationException;
 import sinalgo.gui.transformation.PositionTransformation;
@@ -19,6 +19,7 @@ import sinalgo.runtime.Main;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Vector;
 
 public class BaseDistNode extends Node {
 	
@@ -32,9 +33,20 @@ public class BaseDistNode extends Node {
 	 */
 	protected boolean isCv = true;
 	
+	/**
+	 * Indicates to start the final step in the inheriting sub-class
+	 */
 	protected boolean finalStep = true;
 	
+	/**
+	 * Indicate the sub class to hold executing
+	 */
 	protected boolean isHold = false;
+	
+	/**
+	 * Stores if neighbors are colored in color Key
+	 */
+	protected Vector<Boolean> colorPalette = new Vector<>();
     
     /**
      * Vertex parents in the tree it belongs to, in the forest oriented by the edge labels
@@ -99,21 +111,7 @@ public class BaseDistNode extends Node {
      *
      * @return combined forests color
      */
-    public int getUniColor() {
-        /*// quick & dirty solution to concat all colors
-        String colorString = "";
-        for (int forest : forestColor.keySet()) {
-            colorString += forestColor.get(forest);
-        }
-
-        // convert back to int
-        if (colorString.length() == 0)
-            return 0;
-
-        // Convert to longest int
-        return (int)Long.parseLong(colorString) % Integer.MAX_VALUE;
-		*/
-    	
+    public int getUniColor() {   	
     	return this.uniColor;
     }
 
@@ -213,6 +211,13 @@ public class BaseDistNode extends Node {
         // Number of total nodes on the network
         int numNodes =  AppConfig.getAppConfig().generateNodesDlgNumNodes;
         
+        colorPalette.clear();
+        
+        // Initialize color palette
+		for (int i = 0; i <= BaseCustomGlobal.maxDegree; i++) {
+			colorPalette.add(false);
+		}
+		
         // Handle incoming messages
         while(inbox.hasNext()) {
             Message msg = inbox.next();
@@ -222,14 +227,16 @@ public class BaseDistNode extends Node {
             } else if (msg instanceof ForestJoinMsg) {
                 ForestJoinMsg m = (ForestJoinMsg)msg;
                 onForestJoinMessage((BaseDistNode)inbox.getSender(), m.forest);
-            }
+            } else if (msg instanceof NeighborColorMessage) {
+				if (((NeighborColorMessage) msg).color < BaseCustomGlobal.maxDegree + 1) {
+					colorPalette.set(((NeighborColorMessage) msg).color, true);
+				}
+			}
         }
 
         // Forest Decomposition
         if (Global.currentTime == 1) {
             forestDecomposition();
-            
-            System.out.println("Test - max degree: " + CustomGlobal.maxDegree);
 
         } else if ((Global.currentTime > 2) && isCv) {
             // Run cole-vishkin on all forests
@@ -298,16 +305,8 @@ public class BaseDistNode extends Node {
                 // Not a root
                 notRootsHash.put(forestLbl, false);
 
-                // TODO: test only. delete later (good for grid2D test with 90 nodes)
-                if (forestLbl == 1) {
-                    distEdge.setColor(Color.RED);
-                } else if (forestLbl == 2) {
-                    distEdge.setColor(Color.GREEN);
-                } else if (forestLbl == 3) {
-                    distEdge.setColor(Color.BLUE);
-                } else if (forestLbl == 4) {
-                    distEdge.setColor(Color.YELLOW);
-                }
+                // TODO: test only. delete later
+                colorEdge(distEdge, forestLbl);
 
                 forestLbl++;
             } else {
@@ -319,18 +318,8 @@ public class BaseDistNode extends Node {
                 distEdge.setLabel(0);
             }
         }
-
-        // Iterate all the forests we are currently members of (with connecting edges)
-        /*for (int forest : parentsHash.keySet()) {
-            setColorBitInt(forest, this.ID);
-            // Update children
-            sendColorToChildren(forest, this.ID);
-
-            // Notify the parent it joined a forest
-            BaseDistNode parent = parentsHash.get(forest);
-            send(new ForestJoinMsg(forest), parent);
-        }*/
         
+        // Iterate all the forest
         for (int forest = 1; forest <= BaseCustomGlobal.maxDegree; forest++) {
 	        setColorBitInt(forest, this.ID);
 	        // Update children
@@ -342,6 +331,48 @@ public class BaseDistNode extends Node {
 	        	send(new ForestJoinMsg(forest), parent);
 	        }
         }
+    }
+    
+    /**
+     * Colors the edge with a color distinct to the forest it participates in, for a nice visualization
+     * @param distEdge - The edge
+     * @param forestLbl - Forest label
+     */
+    private void colorEdge(DistBidirectionalEdge distEdge, int forestLbl) {
+    	switch (forestLbl) {
+    	case(1):
+    		distEdge.setColor(Color.RED);
+    		break;
+    	case(2):
+    		distEdge.setColor(Color.GREEN);
+    		break;
+    	case(3):
+    		distEdge.setColor(Color.BLUE);
+    		break;
+    	case(4):
+    		distEdge.setColor(Color.YELLOW);
+    		break;
+    	case(5):
+    		distEdge.setColor(Color.ORANGE);
+    		break;
+    	case(6):
+    		distEdge.setColor(Color.BLACK);
+    		break;
+    	case(7):
+    		distEdge.setColor(Color.CYAN);
+    		break;
+    	case(8):
+    		distEdge.setColor(Color.DARK_GRAY);
+    		break;
+    	case(9):
+    		distEdge.setColor(Color.LIGHT_GRAY);
+    		break;
+    	case(10):
+    		distEdge.setColor(Color.MAGENTA);
+    		break;
+    	default:
+    		distEdge.setColor(Color.PINK);    		
+    	}
     }
     
     /**

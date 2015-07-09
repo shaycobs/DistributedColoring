@@ -1,14 +1,11 @@
 package projects.fasterColoring.nodes.nodeImplementations;
 
-import java.util.Vector;
-
 import projects.fasterColoring.CustomGlobal;
 import projects.fasterColoring.nodes.messages.NeighborColorMessage;
-
 import sinalgo.nodes.edges.Edge;
 import sinalgo.nodes.messages.Inbox;
-import sinalgo.nodes.messages.Message;
 import sinalgo.runtime.Global;
+
 import common.Nodes.BaseDistNode;
 
 public class DistNode extends BaseDistNode {
@@ -34,21 +31,16 @@ public class DistNode extends BaseDistNode {
 	private boolean isReduce = false;
 	
 	@Override
-	public void init() {
-		super.init();
-		
-		reduceCountDown = 2 * (CustomGlobal.maxDegree + 1);
-		iterColor = 3 * (CustomGlobal.maxDegree + 1);
-	}
-	
-	@Override
 	public void handleMessages(Inbox inbox) {
 		super.handleMessages(inbox);
 		
 		if ((Global.currentTime > 2) && !isCv && !isHold && finalStep) {			
 			// Reduce color
 			if (isReduce) {
-				colorReduction(iterColor, inbox);
+				// No need to reduce the first forest iteration
+				if (forestCountUp > 2) {
+					colorReduction(iterColor, inbox);
+				}
 				
 				// Reduce color for next iteration
 				iterColor--;
@@ -58,17 +50,13 @@ public class DistNode extends BaseDistNode {
 				// If we reached 0 we're no longer reducing
 				if (reduceCountDown == 0) {
 					isReduce = false;
-					
-					// Initialize for next forest iteration
-					reduceCountDown= 2 * (CustomGlobal.maxDegree + 1);
-					iterColor = 3 * (CustomGlobal.maxDegree + 1);
 				}
 				
 				// Send messages with the node color to all neighbors
 				for (Edge e : this.outgoingConnections) {
 		            BaseDistNode neighbor = (BaseDistNode)e.endNode;
 		            
-		            send(new NeighborColorMessage(this.uniColor), neighbor);
+		            send(new NeighborColorMessage(getUniColor()), neighbor);
 				}
 				
 			} else if (forestCountUp <= CustomGlobal.maxDegree) { // Merging colors for each forest in increasing order
@@ -81,11 +69,15 @@ public class DistNode extends BaseDistNode {
 				// And after the reducing is done we deal with the next forest
 				forestCountUp++;
 				
+				// Initialize for color decomposition
+				reduceCountDown = 2 * (CustomGlobal.maxDegree + 1);
+				iterColor = 3 * (CustomGlobal.maxDegree + 1);
+				
 				// Send messages with the node color to all neighbors
 				for (Edge e : this.outgoingConnections) {
 		            BaseDistNode neighbor = (BaseDistNode)e.endNode;
 		            
-		            send(new NeighborColorMessage(this.uniColor), neighbor);
+		            send(new NeighborColorMessage(getUniColor()), neighbor);
 				}
 			} else if (forestCountUp == CustomGlobal.maxDegree + 1) {
 				finalStep = false;
@@ -104,24 +96,13 @@ public class DistNode extends BaseDistNode {
 		int mergeColor = getUniColor();
 		
 		if (forestCountUp == 1) {
-			//if (getColorBitInt(forestCountUp) != 0) {
-				// First forest node color
-				mergeColor = getColorBitInt(forestCountUp) - 1;
-			//}
-			
+			mergeColor = getColorBitInt(forestCountUp) - 1;
 		} else {
-			// New color is from (delta+1) * 3 (because of 3-coloring). we add 1 so we won't multiply with 0,
-			// and then 1 is reduces to have 0->delta colors and not 1->delta+1 colors
-			//mergeColor = mergeColor * getColorBitInt(forestCountUp);
-			
-			//if (getColorBitInt(forestCountUp) != 0) {
-				// New color is shifted two bits to the left and or'd the next forest color
-				mergeColor = (mergeColor << 2) | (getColorBitInt(forestCountUp) - 1);
-				
-	
-				// Lower for continuity (dirty dirty trick)
-				mergeColor = mergeColor - (mergeColor / 4);
-			//}
+			// New color is shifted two bits to the left and or'd the next forest color
+			mergeColor = (mergeColor << 2) | (getColorBitInt(forestCountUp) - 1);
+
+			// Lower for continuity (dirty dirty trick)
+			mergeColor = mergeColor - (mergeColor / 4);
 		}
 		
 		setUniColor(mergeColor);
@@ -136,43 +117,14 @@ public class DistNode extends BaseDistNode {
 	private void colorReduction(int currentColor, Inbox inbox) {		
 		// Reduce only the current iteration color
 		if (this.uniColor == currentColor) {
-			// Get the colors of all neighbors
-			/*for (Edge e : this.outgoingConnections) {
-	            BaseDistNode neighbor = (BaseDistNode)e.endNode;
-
-	            // If a neighbor is colored in a color for (delta+1) color palette, we can't use it
-	            if (neighbor.getColorBitInt() < maxDegree) {
-	                colorPalette.set(neighbor.getColorBitInt()-1, true);
-	            }
-	        }*/
-			
-			// Stores if neighbors are colored in color Key
-			Vector<Boolean> colorPalette = new Vector<>();
-			
-			// Initialize color palette
-			for (int i = 0; i <= CustomGlobal.maxDegree; i++) {
-				colorPalette.add(false);
-			}
-			
-			// Get the colors of all neighbors
-			while (inbox.hasNext()) {
-				Message msg = inbox.next();
-				
-				if (msg instanceof NeighborColorMessage) {
-					if (((NeighborColorMessage) msg).color <= CustomGlobal.maxDegree + 1) {
-						colorPalette.set(((NeighborColorMessage) msg).color - 1, true);
-					}
-				}
-			}
-
 			// Search for a free color in the palette
 			for (int i = 0; i < colorPalette.size(); i++) {
 				if (!colorPalette.get(i)) {
-					this.setUniColor(i+1);
+					setUniColor(i);
 				}
 			}
 			
-			System.out.println("FC Node=" + this.ID + "; Color reduced from " + currentColor + " to " + this.uniColor);
+			System.out.println("FC Node=" + this.ID + "; Color reduced from " + currentColor + " to " + this.getUniColor());
 		}
 	}
 }
