@@ -28,7 +28,7 @@ public class DistNode extends BaseDistNode {
 	 * Is in reduce
 	 */
 	private boolean isReduce = false;
-	
+
 	@Override
 	public void handleMessages(Inbox inbox) {
 		super.handleMessages(inbox);
@@ -80,7 +80,7 @@ public class DistNode extends BaseDistNode {
 				}
 			} else if (forestCountUp == CustomGlobal.maxDegree + 1) {
 				finalStep = false;
-				System.out.println("FC Node=" + this.ID + "; Faster Coloring done! Final color: " + this.uniColor);
+				System.out.println("Round [" + Global.currentTime + "]:" +"FC Node=" + this.ID + "; Faster Coloring done! Final color: " + this.uniColor);
 				forestCountUp++;
 			}
 		}
@@ -106,7 +106,7 @@ public class DistNode extends BaseDistNode {
 		
 		setUniColor(mergeColor);
 		
-		System.out.println("FC Node=" + this.ID + "; Merge for forest: " + forestCountUp + "; Computed color: " + this.uniColor);
+		System.out.println("Round [" + Global.currentTime + "]:" +"FC Node=" + this.ID + "; Merge for forest: " + forestCountUp + "; Computed color: " + this.uniColor);
 	}
 	
 	/**
@@ -123,7 +123,7 @@ public class DistNode extends BaseDistNode {
 				}
 			}
 			
-			System.out.println("FC Node=" + this.ID + "; Color reduced from " + currentColor + " to " + this.getUniColor());
+			System.out.println("Round [" + Global.currentTime + "]:" + "FC Node=" + this.ID + "; Color reduced from " + currentColor + " to " + this.getUniColor());
 		}
 	}
 }

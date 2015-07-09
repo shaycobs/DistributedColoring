@@ -76,6 +76,7 @@ public class BaseDistNode extends Node {
 
     @Override
     public void init() {
+
     }
 
     /**
@@ -236,6 +237,8 @@ public class BaseDistNode extends Node {
 
         // Forest Decomposition
         if (Global.currentTime == 1) {
+            System.out.println("Node " + ID + ": Starting algo on graph with " + AppConfig.getAppConfig().generateNodesDlgNumNodes
+                    + " nodes and max degree of " + BaseCustomGlobal.maxDegree);
             forestDecomposition();
 
         } else if ((Global.currentTime > 2) && isCv) {
@@ -254,13 +257,9 @@ public class BaseDistNode extends Node {
                 if (cv.phase != ColeVishkin.Phase.COMPLETED) {
                     try {
                         ColeVishkin.Phase phase = cv.onRound(cvRound);
-
-                        if (phase == ColeVishkin.Phase.COMPLETED) {
-                            System.out.println("CV Node=" + this.ID + " Cole-Vishkin done! node on forest " + forest + " color " + getColorBitInt(forest));
-                        }
                     } catch (Exception e) {
-                        Main.fatalError("Node=" + this.ID + " Error running cole-Vishkin: " + e.getMessage());
                         e.printStackTrace();
+                        Main.fatalError("Node=" + this.ID + " Error running cole-Vishkin: " + e.getMessage());
                     }
                 }
             }

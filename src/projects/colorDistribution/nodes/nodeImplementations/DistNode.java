@@ -23,7 +23,7 @@ public class DistNode extends BaseDistNode {
 				uniColor = uniColor - (uniColor / 4);
 			}
 
-			System.out.println("CD Node=" + this.ID + "; color distribution done! Merged color: " + this.uniColor);
+			System.out.println("Round [" + Global.currentTime + "]:" +"CD Node=" + this.ID + "; color distribution done! Merged color: " + this.uniColor);
 
 			finalStep = false;
 		}

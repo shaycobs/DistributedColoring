@@ -72,6 +72,11 @@ public class ColeVishkin {
                 }
                 break;
             case SHIFT_DOWN:
+                if (node.getColorBitInt(forestLabel) > 6) {
+                    throw new Exception("ERROR! CV reduceColor completed but node " + node.ID + " on forest "
+                        + forestLabel + " color is illegal (> 6) and cannot be shifted-down. Color is : "
+                        + node.getColorBitInt(forestLabel));
+                }
                 System.out.println("CV Node=" + node.ID + " Shift-down on forest " + forestLabel);
                 shiftDown();
                 phase = Phase.FIRST_FREE;
@@ -81,18 +86,25 @@ public class ColeVishkin {
                     firstFree();
                     System.out.println("CV Node=" + node.ID + " First-free. forest: " + forestLabel + " next color " + currentShiftDownColor);
                 }
+
                 // Go to next color
                 currentShiftDownColor--;
-                phase = currentShiftDownColor >= 4 ? Phase.SHIFT_DOWN : Phase.COMPLETED;
-                break;
-            case COMPLETED:
-                if (node.getColorBitInt(forestLabel) <= 3) {
-                    System.out.println("Painted node " + node.ID + " on forest " + forestLabel
-                            + " successfully by color " + node.getColorBitInt(forestLabel)
-                            + " parent color is " + node.getParent(forestLabel).getColorBitInt(forestLabel));
+                if (currentShiftDownColor >= 4) {
+                    // still more work needed
+                    phase = Phase.SHIFT_DOWN;
                 } else {
-                    throw new Exception("ERROR! CV algo completed but node " + node.ID + " on forest " + forestLabel + " color is " + node.getColorBitInt(forestLabel));
+                    // Done!
+                    phase = Phase.COMPLETED;
+                    // verify it worked
+                    if (node.getColorBitInt(forestLabel) <= 3) {
+                        System.out.println("CV Node=" + node.ID + " completed on forest " + forestLabel
+                                + ". color is " + node.getColorBitInt(forestLabel));
+                    } else {
+                        throw new Exception("ERROR! CV algo completed but node " + node.ID + " on forest " + forestLabel + " color is " + node.getColorBitInt(forestLabel));
+                    }
                 }
+                break;
+
         }
 
         return phase;
@@ -115,7 +127,7 @@ public class ColeVishkin {
         int bitValue = (myColor & x) > 0 ? 1 : 0;
 
         // Now create the new color by concatenating the different bit index to its value (+1, to make colors start at 1)
-        newColor = concatBitToNum(diffInd+1, bitValue);
+        newColor = concatBitToNum(diffInd, bitValue) + 1;
 
         // Set this as the new color
         setColorBitInt(newColor);
