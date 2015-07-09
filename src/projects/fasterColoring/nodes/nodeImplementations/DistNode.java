@@ -114,7 +114,7 @@ public class DistNode extends BaseDistNode {
 	 * If the node's color is current color, reduces it to a color from delta+1
 	 * @param currentColor
 	 */
-	private void colorReduction(int currentColor, Inbox inbox) {		
+	private void colorReduction(int currentColor, Inbox inbox) {
 		// Reduce only the current iteration color
 		if (this.uniColor == currentColor) {
 			// Search for a free color in the palette

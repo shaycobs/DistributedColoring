@@ -12,7 +12,7 @@ public class DistNode extends BaseDistNode {
 		super.handleMessages(inbox);
 		
 		if ((Global.currentTime > 2) && !isCv && !isHold && finalStep) {
-			// Set unicolor to 1 so first mult won't do any difference
+			// Initialize unicolor
 			uniColor = 0;
 			
 			// The new color is a multiply of the vertex colors from all forests
