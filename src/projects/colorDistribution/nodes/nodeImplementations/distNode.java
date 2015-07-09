@@ -25,7 +25,7 @@ public class DistNode extends BaseDistNode {
 				//this.uniColor *= color;
 			}
 			
-			System.out.println("Node=" + this.ID + " color distribution done! Merged color: " + this.uniColor);
+			System.out.println("CD Node=" + this.ID + "; color distribution done! Merged color: " + this.uniColor);
 			
 			finalStep = false;
 		}

@@ -45,7 +45,7 @@ public class DistNode extends BaseDistNode {
 	public void handleMessages(Inbox inbox) {
 		super.handleMessages(inbox);
 		
-		if ((Global.currentTime > 2) && !isCv && finalStep) {			
+		if ((Global.currentTime > 2) && !isCv && !isHold && finalStep) {			
 			// Reduce color
 			if (isReduce) {
 				colorReduction(iterColor, inbox);
@@ -87,10 +87,14 @@ public class DistNode extends BaseDistNode {
 		            
 		            send(new NeighborColorMessage(this.uniColor), neighbor);
 				}
-				
+			} else if (forestCountUp == CustomGlobal.maxDegree + 1) {
 				finalStep = false;
+				System.out.println("FC Node=" + this.ID + "; Faster Coloring done! Final color: " + this.uniColor);
+				forestCountUp++;
 			}
 		}
+		
+		isHold = false;
 	}
 
 	/**
@@ -100,23 +104,29 @@ public class DistNode extends BaseDistNode {
 		int mergeColor = getUniColor();
 		
 		if (forestCountUp == 1) {
-			// First forest node color
-			mergeColor = getColorBitInt(forestCountUp) - 1;
+			//if (getColorBitInt(forestCountUp) != 0) {
+				// First forest node color
+				mergeColor = getColorBitInt(forestCountUp) - 1;
+			//}
 			
 		} else {
 			// New color is from (delta+1) * 3 (because of 3-coloring). we add 1 so we won't multiply with 0,
 			// and then 1 is reduces to have 0->delta colors and not 1->delta+1 colors
 			//mergeColor = mergeColor * getColorBitInt(forestCountUp);
 			
-			// New color is shifted two bits to the left and or'd the next forest color
-			mergeColor = (mergeColor << 2) | (getColorBitInt(forestCountUp) - 1);
-			
-
-			// Lower for continuity (dirty dirty trick)
-			mergeColor = mergeColor - (mergeColor / 4);
+			//if (getColorBitInt(forestCountUp) != 0) {
+				// New color is shifted two bits to the left and or'd the next forest color
+				mergeColor = (mergeColor << 2) | (getColorBitInt(forestCountUp) - 1);
+				
+	
+				// Lower for continuity (dirty dirty trick)
+				mergeColor = mergeColor - (mergeColor / 4);
+			//}
 		}
 		
 		setUniColor(mergeColor);
+		
+		System.out.println("FC Node=" + this.ID + "; Merge for forest: " + forestCountUp + "; Computed color: " + this.uniColor);
 	}
 	
 	/**
@@ -161,6 +171,8 @@ public class DistNode extends BaseDistNode {
 					this.setUniColor(i+1);
 				}
 			}
+			
+			System.out.println("FC Node=" + this.ID + "; Color reduced from " + currentColor + " to " + this.uniColor);
 		}
 	}
 }

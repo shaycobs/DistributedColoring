@@ -65,21 +65,21 @@ public class ColeVishkin {
 
         switch (phase) {
             case REDUCE:
-                System.out.println("Node=" + node.ID + " Reduce phase. forest: " + forestLabel + " round " + round + " reduce color rounds: " + reduceColorRounds);
+                System.out.println("CV Node=" + node.ID + " Reduce phase. forest: " + forestLabel + " round " + round + " reduce color rounds: " + reduceColorRounds);
                 reduceColor();
                 if (round == reduceColorRounds) {
                     phase = Phase.SHIFT_DOWN;
                 }
                 break;
             case SHIFT_DOWN:
-                System.out.println("Node=" + node.ID + " Shift-down on forest " + forestLabel);
+                System.out.println("CV Node=" + node.ID + " Shift-down on forest " + forestLabel);
                 shiftDown();
                 phase = Phase.FIRST_FREE;
                 break;
             case FIRST_FREE:
                 if (node.getColorBitInt(forestLabel) == currentShiftDownColor) {
                     firstFree();
-                    System.out.println("Node=" + node.ID + " First-free. forest: " + forestLabel + " next color " + currentShiftDownColor);
+                    System.out.println("CV Node=" + node.ID + " First-free. forest: " + forestLabel + " next color " + currentShiftDownColor);
                 }
                 // Go to next color
                 currentShiftDownColor--;

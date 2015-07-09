@@ -2,8 +2,10 @@ package common.Nodes;
 
 import common.Messages.ColorChangeMsg;
 import common.Messages.ForestJoinMsg;
+import common.globals.BaseCustomGlobal;
 import distributedAlgos.ColeVishkin;
 import projects.colorDistribution.nodes.edges.DistBidirectionalEdge;
+import projects.fasterColoring.CustomGlobal;
 import sinalgo.configuration.AppConfig;
 import sinalgo.configuration.WrongConfigurationException;
 import sinalgo.gui.transformation.PositionTransformation;
@@ -31,6 +33,8 @@ public class BaseDistNode extends Node {
 	protected boolean isCv = true;
 	
 	protected boolean finalStep = true;
+	
+	protected boolean isHold = false;
     
     /**
      * Vertex parents in the tree it belongs to, in the forest oriented by the edge labels
@@ -224,6 +228,8 @@ public class BaseDistNode extends Node {
         // Forest Decomposition
         if (Global.currentTime == 1) {
             forestDecomposition();
+            
+            System.out.println("Test - max degree: " + CustomGlobal.maxDegree);
 
         } else if ((Global.currentTime > 2) && isCv) {
             // Run cole-vishkin on all forests
@@ -243,7 +249,7 @@ public class BaseDistNode extends Node {
                         ColeVishkin.Phase phase = cv.onRound(cvRound);
 
                         if (phase == ColeVishkin.Phase.COMPLETED) {
-                            System.out.println("Node=" + this.ID + " Cole-Vishkin done! node on forest " + forest + " color " + getColorBitInt(forest));
+                            System.out.println("CV Node=" + this.ID + " Cole-Vishkin done! node on forest " + forest + " color " + getColorBitInt(forest));
                         }
                     } catch (Exception e) {
                         Main.fatalError("Node=" + this.ID + " Error running cole-Vishkin: " + e.getMessage());
@@ -254,6 +260,7 @@ public class BaseDistNode extends Node {
             
             // Check if CV should calculate in the next round
             isCv = isNotAllComplete();
+            if (!isCv) isHold = true;
         }
     }
 
@@ -267,7 +274,7 @@ public class BaseDistNode extends Node {
      * @param color
      */
     private void updateParentColor(int forest, int color) {
-        System.out.println("Node " + this.ID +"'s parent changed forest " + forest + " color to " + color);
+        System.out.println("CV Node " + this.ID +"'s parent changed forest " + forest + " color to " + color);
 
         parentsHash.get(forest).setColorBitInt(forest, color);
     }
@@ -313,8 +320,8 @@ public class BaseDistNode extends Node {
             }
         }
 
-        // Iterate all the forests we are currently members of
-        for (int forest : parentsHash.keySet()) {
+        // Iterate all the forests we are currently members of (with connecting edges)
+        /*for (int forest : parentsHash.keySet()) {
             setColorBitInt(forest, this.ID);
             // Update children
             sendColorToChildren(forest, this.ID);
@@ -322,13 +329,25 @@ public class BaseDistNode extends Node {
             // Notify the parent it joined a forest
             BaseDistNode parent = parentsHash.get(forest);
             send(new ForestJoinMsg(forest), parent);
+        }*/
+        
+        for (int forest = 1; forest <= BaseCustomGlobal.maxDegree; forest++) {
+	        setColorBitInt(forest, this.ID);
+	        // Update children
+	        sendColorToChildren(forest, this.ID);
+	
+	        // Notify the parent it joined a forest
+	        BaseDistNode parent = parentsHash.get(forest);
+	        if (parent != null) {
+	        	send(new ForestJoinMsg(forest), parent);
+	        }
         }
     }
     
     /**
      * @return true if all forests are done with Cole Vishkin. false otherwise.
      */
-    private boolean isNotAllComplete() {
+    protected boolean isNotAllComplete() {
     	for (ColeVishkin cv : forestCV.values()) {
 			if (cv.phase != ColeVishkin.Phase.COMPLETED) {
 				return true;

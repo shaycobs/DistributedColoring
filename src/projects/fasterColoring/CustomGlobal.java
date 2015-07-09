@@ -37,7 +37,7 @@
 package projects.fasterColoring;
 
 
-import sinalgo.runtime.AbstractCustomGlobal;
+import common.globals.BaseCustomGlobal;
 
 /**
  * This class holds customized global state and methods for the framework. 
@@ -60,12 +60,7 @@ import sinalgo.runtime.AbstractCustomGlobal;
  * custom methods that can be called either through the menu or via a button that is
  * added to the GUI. 
  */
-public class CustomGlobal extends AbstractCustomGlobal{
-
-    /**
-     * Holds the maximum degree of the graph. Calculated at build time, when using MaxDegree connectivity model.
-     */
-    public static int maxDegree;
+public class CustomGlobal extends BaseCustomGlobal {
 
 	/* (non-Javadoc)
 	 * @see runtime.AbstractCustomGlobal#hasTerminated()

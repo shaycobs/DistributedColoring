@@ -8,6 +8,8 @@ import sinalgo.nodes.Node;
 
 import java.util.Enumeration;
 
+import common.globals.BaseCustomGlobal;
+
 public class BaseMaxDegree extends StaticUDG {
 
     private int degree = 0;
@@ -22,7 +24,7 @@ public class BaseMaxDegree extends StaticUDG {
 
     public boolean updateConnections(Node n) throws WrongConfigurationException {
         boolean edgeAdded = false;
-
+        
         // For the given node n, retrieve only the nodes which are possible neighbor candidates. This
         // is possible because of the rMax filed of the GeometricNodeCollection, which indicates the maximum
         // distance between any two connected points.
@@ -40,7 +42,7 @@ public class BaseMaxDegree extends StaticUDG {
                         // update current node's degree
                         degree++;
                         // Update the maximum degree of the graph
-                        CustomGlobal.maxDegree = Math.max(CustomGlobal.maxDegree, degree);
+                        BaseCustomGlobal.maxDegree = Math.max(BaseCustomGlobal.maxDegree, degree);
                     }
                 }
             }
