@@ -44,6 +44,11 @@ public class BaseDistNode extends Node {
 	protected boolean isHold = false;
 	
 	/**
+	 * Skip one round after CV
+	 */
+	protected boolean isSkip = false;
+	
+	/**
 	 * Stores if neighbors are colored in color Key
 	 */
 	protected Vector<Boolean> colorPalette = new Vector<>();
@@ -234,6 +239,11 @@ public class BaseDistNode extends Node {
 				}
 			}
         }
+        
+        if (isSkip) {
+        	isHold = true;
+        	isSkip = false;
+        }
 
         // Forest Decomposition
         if (Global.currentTime == 1) {
@@ -266,7 +276,10 @@ public class BaseDistNode extends Node {
             
             // Check if CV should calculate in the next round
             isCv = isNotAllComplete();
-            if (!isCv) isHold = true;
+            if (!isCv) {
+            	isSkip = true;
+            	isHold = true;
+            }
         }
     }
 
@@ -304,8 +317,7 @@ public class BaseDistNode extends Node {
                 // Not a root
                 notRootsHash.put(forestLbl, false);
 
-                // TODO: test only. delete later
-                colorEdge(distEdge, forestLbl);
+                distEdge.setColor(Color.LIGHT_GRAY);
 
                 forestLbl++;
             } else {

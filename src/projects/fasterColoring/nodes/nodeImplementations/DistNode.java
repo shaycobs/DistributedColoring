@@ -107,10 +107,9 @@ public class DistNode extends BaseDistNode {
 		
 		setUniColor(mergeColor);
 		
-		System.out.println("FC Node=" + this.ID + "; Merge for forest: " + forestCountUp 
+		System.out.println("Round [" + Global.currentTime + "]:" + "FC Node=" + this.ID + "; Merge for forest: " + forestCountUp 
 				+ "; Previous color: " + previous + "; Current color: " + (getColorBitInt(forestCountUp) - 1) 
 				+ "; Computed color: " + this.uniColor);
-		//System.out.println("Round [" + Global.currentTime + "]:" +"FC Node=" + this.ID + "; Merge for forest: " + forestCountUp + "; Computed color: " + this.uniColor);
 	}
 	
 	/**
