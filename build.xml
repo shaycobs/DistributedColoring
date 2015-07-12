@@ -57,7 +57,7 @@
 
 	<!-- set global properties for this build -->
   	<property name="SINALGOversion" value="0.75.3"/> <!-- Change also in Configuration.java -->
-	<property name="targetJVM"  value="1.5"/>
+	<property name="targetJVM"  value="1.7"/>
 	<property name="docsDir"  value="doc"/>
 	
     <!-- Create the binary directory structure -->
@@ -101,42 +101,7 @@
 		<copy todir="${toyReleasePath}/binaries/bin/projects/template">
 		    <fileset dir="${jarPath}/bin/projects/template"/>
 		</copy>	
-		<copy todir="${toyReleasePath}/src/projects/sample1">
-		    <fileset dir="${srcDir}/projects/sample1"/>
-		</copy>
-		<copy todir="${toyReleasePath}/binaries/bin/projects/sample1">
-		    <fileset dir="${jarPath}/bin/projects/sample1"/>
-		</copy>
-		<copy todir="${toyReleasePath}/src/projects/sample2">
-		    <fileset dir="${srcDir}/projects/sample2"/>
-		</copy>
-		<copy todir="${toyReleasePath}/binaries/bin/projects/sample2">
-		    <fileset dir="${jarPath}/bin/projects/sample2"/>
-		</copy>
-		<copy todir="${toyReleasePath}/src/projects/sample3">
-		    <fileset dir="${srcDir}/projects/sample3"/>
-		</copy>
-		<copy todir="${toyReleasePath}/binaries/bin/projects/sample3">
-		    <fileset dir="${jarPath}/bin/projects/sample3"/>
-		</copy>
-		<copy todir="${toyReleasePath}/src/projects/sample4">
-		    <fileset dir="${srcDir}/projects/sample4"/>
-		</copy>
-		<copy todir="${toyReleasePath}/binaries/bin/projects/sample4">
-		    <fileset dir="${jarPath}/bin/projects/sample4"/>
-		</copy>
-		<copy todir="${toyReleasePath}/src/projects/sample5">
-		    <fileset dir="${srcDir}/projects/sample5"/>
-		</copy>
-		<copy todir="${toyReleasePath}/binaries/bin/projects/sample5">
-		    <fileset dir="${jarPath}/bin/projects/sample5"/>
-		</copy>
-		<copy todir="${toyReleasePath}/src/projects/sample6">
-		    <fileset dir="${srcDir}/projects/sample6"/>
-		</copy>
-		<copy todir="${toyReleasePath}/binaries/bin/projects/sample6">
-		    <fileset dir="${jarPath}/bin/projects/sample6"/>
-		</copy>
+
 		<delete dir="${toyReleasePath}/src/sinalgo"/>
 		<delete dir="${toyReleasePath}/binaries/bin/sinalgo"/>
 		
@@ -167,45 +132,6 @@
 		</copy>
 		<copy todir="${regularReleasePath}/binaries/bin/projects/defaultProject">
 		    <fileset dir="${jarPath}/bin/projects/defaultProject"/>
-		</copy>	
-		<copy todir="${regularReleasePath}/binaries/bin/projects/template">
-		    <fileset dir="${jarPath}/bin/projects/template"/>
-		</copy>
-		<copy todir="${regularReleasePath}/src/projects/sample1">
-		    <fileset dir="${srcDir}/projects/sample1"/>
-		</copy>
-		<copy todir="${regularReleasePath}/binaries/bin/projects/sample1">
-		    <fileset dir="${jarPath}/bin/projects/sample1"/>
-		</copy>	
-		<copy todir="${regularReleasePath}/src/projects/sample2">
-		    <fileset dir="${srcDir}/projects/sample2"/>
-		</copy>
-		<copy todir="${regularReleasePath}/binaries/bin/projects/sample2">
-		    <fileset dir="${jarPath}/bin/projects/sample2"/>
-		</copy>
-		<copy todir="${regularReleasePath}/src/projects/sample3">
-		    <fileset dir="${srcDir}/projects/sample3"/>
-		</copy>
-		<copy todir="${regularReleasePath}/binaries/bin/projects/sample3">
-		    <fileset dir="${jarPath}/bin/projects/sample3"/>
-		</copy>
-		<copy todir="${regularReleasePath}/src/projects/sample4">
-		    <fileset dir="${srcDir}/projects/sample4"/>
-		</copy>
-		<copy todir="${regularReleasePath}/binaries/bin/projects/sample4">
-		    <fileset dir="${jarPath}/bin/projects/sample4"/>
-		</copy>
-		<copy todir="${regularReleasePath}/src/projects/sample5">
-		    <fileset dir="${srcDir}/projects/sample5"/>
-		</copy>
-		<copy todir="${regularReleasePath}/binaries/bin/projects/sample5">
-		    <fileset dir="${jarPath}/bin/projects/sample5"/>
-		</copy>
-		<copy todir="${regularReleasePath}/src/projects/sample6">
-		    <fileset dir="${srcDir}/projects/sample6"/>
-		</copy>
-		<copy todir="${regularReleasePath}/binaries/bin/projects/sample6">
-		    <fileset dir="${jarPath}/bin/projects/sample6"/>
 		</copy>
 		
 		<!-- Copy additional stuff to the distribution -->
@@ -240,7 +166,8 @@
 	    	target = "${targetJVM}"
 			debug = "on"
 			debuglevel = "lines,vars,source"
-			source = "1.5"
+			source = "1.7"
+			includeantruntime="false"
 		>
 		</javac>
 		<copy todir="${binDir}/sinalgo/images">
